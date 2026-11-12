@@ -215,7 +215,8 @@ cmdr fetch <M>  [--out <dir>]                             # 下載擁有者上�
 | 媒體檢視器（全螢幕） | 依 kind 切換：圖片（棋盤格、放大）、影片、音效（A/B）、sprite、3D、尺度預覽開關 |
 | 設定 | 開啟通知（訂閱 Web Push）、測試通知、token 登出 |
 
-- PWA：`manifest.webmanifest`、圖示、`display: standalone`；service worker：app shell 快取、`/media/*` cache-first（immutable）、`/api/*` network-only；離線時顯示「筆電離線」。
+- PWA：`manifest.webmanifest`、圖示、`display: standalone`；service worker：app shell（`index.html` 與帶 hash 的 JS/CSS）precache、`/media/*` cache-first（immutable）、`GET /api/tasks` 與 `GET /api/tasks/<t>` stale-while-revalidate（先畫上次的資料並標示「更新中」，拿到新資料再換掉）、其餘 `/api/*` network-only；離線時顯示「筆電離線」與上次的資料（唯讀，不能送出）。
+- 載入速度（2026-11-12 加入，見 `plans/art-cmdr-P1-perf-impl.md`）：已安裝的 PWA 再次開啟，1 秒內畫出收件匣（可為快取資料），2 秒內換成最新資料；首次開啟（無快取、4G）3 秒內可操作。首屏 JS（gzip 後）≤ 150 KB，`<model-viewer>`、diff、錄音等非首屏功能延遲載入。
 - 通知內容：`<task> · <題目>`（不放媒體），點擊開到該題。主 session 回覆對話也通知。
 - 輪詢：前景每 5 秒刷新目前頁（輸入中不打斷、草稿保留）。
 
